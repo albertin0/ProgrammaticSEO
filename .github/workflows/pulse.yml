@@ -1,0 +1,62 @@
+name: Pulse — Hourly Health Data Update
+
+on:
+  schedule:
+    # Every 10 minutes — GitHub Actions minimum granularity is 5 min
+    - cron: "*/10 * * * *"
+  workflow_dispatch: # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  update-vault:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run factory (limit to 50 cities per run to stay within timeout)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+        run: |
+          python factory.py --limit 50
+        # Note: Rotate through cities by passing --limit and tracking state,
+        # or run multiple jobs in parallel if you need full coverage faster.
+
+      - name: Commit updated MDX files
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add vault/
+          if git diff --staged --quiet; then
+            echo "No vault changes to commit."
+          else
+            TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M UTC")
+            git commit -m "Daily Health Update [$TIMESTAMP]"
+            git push
+          fi
+
+      - name: Trigger Vercel ISR (Incremental Static Regeneration)
+        if: success()
+        run: |
+          if [ -n "${{ secrets.VERCEL_DEPLOY_HOOK }}" ]; then
+            curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+            echo "✅ Vercel deploy hook triggered"
+          else
+            echo "ℹ️  VERCEL_DEPLOY_HOOK not set — skipping ISR trigger"
+          fi

@@ -1,0 +1,248 @@
+city,state,country,lat,lon
+New York City,New York,us,40.7128,-74.0060
+Los Angeles,California,us,34.0522,-118.2437
+Chicago,Illinois,us,41.8781,-87.6298
+Houston,Texas,us,29.7604,-95.3698
+Phoenix,Arizona,us,33.4484,-112.0740
+Philadelphia,Pennsylvania,us,39.9526,-75.1652
+San Antonio,Texas,us,29.4241,-98.4936
+San Diego,California,us,32.7157,-117.1611
+Dallas,Texas,us,32.7767,-96.7970
+San Jose,California,us,37.3382,-121.8863
+Austin,Texas,us,30.2672,-97.7431
+Jacksonville,Florida,us,30.3322,-81.6557
+Fort Worth,Texas,us,32.7555,-97.3308
+Columbus,Ohio,us,39.9612,-82.9988
+Charlotte,North Carolina,us,35.2271,-80.8431
+Indianapolis,Indiana,us,39.7684,-86.1581
+San Francisco,California,us,37.7749,-122.4194
+Seattle,Washington,us,47.6062,-122.3321
+Denver,Colorado,us,39.7392,-104.9903
+Nashville,Tennessee,us,36.1627,-86.7816
+Oklahoma City,Oklahoma,us,35.4676,-97.5164
+El Paso,Texas,us,31.7619,-106.4850
+Washington,DC,us,38.9072,-77.0369
+Las Vegas,Nevada,us,36.1699,-115.1398
+Louisville,Kentucky,us,38.2527,-85.7585
+Memphis,Tennessee,us,35.1495,-90.0490
+Portland,Oregon,us,45.5051,-122.6750
+Baltimore,Maryland,us,39.2904,-76.6122
+Milwaukee,Wisconsin,us,43.0389,-87.9065
+Albuquerque,New Mexico,us,35.0853,-106.6056
+Tucson,Arizona,us,32.2217,-110.9265
+Fresno,California,us,36.7378,-119.7871
+Sacramento,California,us,38.5816,-121.4944
+Mesa,Arizona,us,33.4152,-111.8315
+Kansas City,Missouri,us,39.0997,-94.5786
+Atlanta,Georgia,us,33.7490,-84.3880
+Omaha,Nebraska,us,41.2565,-95.9345
+Colorado Springs,Colorado,us,38.8339,-104.8214
+Raleigh,North Carolina,us,35.7796,-78.6382
+Long Beach,California,us,33.7701,-118.1937
+Virginia Beach,Virginia,us,36.8529,-75.9780
+Minneapolis,Minnesota,us,44.9778,-93.2650
+Tampa,Florida,us,27.9506,-82.4572
+New Orleans,Louisiana,us,29.9511,-90.0715
+Arlington,Texas,us,32.7357,-97.1081
+Bakersfield,California,us,35.3733,-119.0187
+Honolulu,Hawaii,us,21.3069,-157.8583
+Anaheim,California,us,33.8366,-117.9143
+Aurora,Colorado,us,39.7294,-104.8319
+Santa Ana,California,us,33.7455,-117.8678
+Corpus Christi,Texas,us,27.8006,-97.3964
+Riverside,California,us,33.9806,-117.3755
+Lexington,Kentucky,us,38.0406,-84.5037
+Pittsburgh,Pennsylvania,us,40.4406,-79.9959
+Anchorage,Alaska,us,61.2181,-149.9003
+Stockton,California,us,37.9577,-121.2908
+Cincinnati,Ohio,us,39.1031,-84.5120
+Saint Paul,Minnesota,us,44.9537,-93.0900
+Greensboro,North Carolina,us,36.0726,-79.7920
+Toledo,Ohio,us,41.6639,-83.5552
+Newark,New Jersey,us,40.7357,-74.1724
+Plano,Texas,us,33.0198,-96.6989
+Henderson,Nevada,us,36.0395,-114.9817
+Orlando,Florida,us,28.5383,-81.3792
+Chandler,Arizona,us,33.3062,-111.8413
+St. Louis,Missouri,us,38.6270,-90.1994
+Laredo,Texas,us,27.5064,-99.5075
+Norfolk,Virginia,us,36.8508,-76.2859
+Madison,Wisconsin,us,43.0731,-89.4012
+Durham,North Carolina,us,35.9940,-78.8986
+Lubbock,Texas,us,33.5779,-101.8552
+Winston-Salem,North Carolina,us,36.0999,-80.2442
+Garland,Texas,us,32.9126,-96.6389
+Glendale,Arizona,us,33.5387,-112.1860
+Hialeah,Florida,us,25.8576,-80.2781
+Reno,Nevada,us,39.5296,-119.8138
+Baton Rouge,Louisiana,us,30.4515,-91.1871
+Irvine,California,us,33.6846,-117.8265
+Chesapeake,Virginia,us,36.7682,-76.2875
+Irving,Texas,us,32.8140,-96.9489
+Scottsdale,Arizona,us,33.4942,-111.9261
+North Las Vegas,Nevada,us,36.1989,-115.1175
+Fremont,California,us,37.5485,-121.9886
+Gilbert,Arizona,us,33.3528,-111.7890
+San Bernardino,California,us,34.1083,-117.2898
+Birmingham,Alabama,us,33.5186,-86.8104
+Rochester,New York,us,43.1566,-77.6088
+Spokane,Washington,us,47.6587,-117.4260
+Des Moines,Iowa,us,41.5868,-93.6250
+Montgomery,Alabama,us,32.3668,-86.3000
+Modesto,California,us,37.6391,-120.9969
+Fayetteville,North Carolina,us,35.0527,-78.8784
+Tacoma,Washington,us,47.2529,-122.4443
+Akron,Ohio,us,41.0814,-81.5190
+Aurora,Illinois,us,41.7606,-88.3201
+Yonkers,New York,us,40.9312,-73.8988
+Oxnard,California,us,34.1975,-119.1771
+Augusta,Georgia,us,33.4735,-82.0105
+Little Rock,Arkansas,us,34.7465,-92.2896
+Columbus,Georgia,us,32.4610,-84.9877
+Amarillo,Texas,us,35.2220,-101.8313
+Huntsville,Alabama,us,34.7304,-86.5861
+Salt Lake City,Utah,us,40.7608,-111.8910
+Grand Rapids,Michigan,us,42.9634,-85.6681
+Tallahassee,Florida,us,30.4383,-84.2807
+Huntington Beach,California,us,33.6595,-117.9988
+Knoxville,Tennessee,us,35.9606,-83.9207
+Worcester,Massachusetts,us,42.2626,-71.8023
+Newport News,Virginia,us,37.0871,-76.4730
+Providence,Rhode Island,us,41.8240,-71.4128
+Fort Lauderdale,Florida,us,26.1224,-80.1373
+Garden Grove,California,us,33.7739,-117.9415
+Oceanside,California,us,33.1959,-117.3795
+Rancho Cucamonga,California,us,34.1064,-117.5931
+Santa Clarita,California,us,34.3917,-118.5426
+Tempe,Arizona,us,33.4255,-111.9400
+Ontario,California,us,34.0633,-117.6509
+Elk Grove,California,us,38.4088,-121.3716
+Salem,Oregon,us,44.9429,-123.0351
+Cary,North Carolina,us,35.7915,-78.7811
+Hayward,California,us,37.6688,-122.0808
+Clarksville,Tennessee,us,36.5298,-87.3595
+Palmdale,California,us,34.5794,-118.1165
+Salinas,California,us,36.6777,-121.6555
+Lakewood,Colorado,us,39.7047,-105.0814
+Sunnyvale,California,us,37.3688,-122.0363
+Springfield,Missouri,us,37.2090,-93.2923
+Escondido,California,us,33.1192,-117.0864
+Pomona,California,us,34.0553,-117.7499
+Kansas City,Kansas,us,39.1155,-94.6268
+Fort Collins,Colorado,us,40.5853,-105.0844
+Rockford,Illinois,us,42.2711,-89.0940
+Torrance,California,us,33.8358,-118.3406
+Paterson,New Jersey,us,40.9176,-74.1719
+Joliet,Illinois,us,41.5250,-88.0817
+Hollywood,Florida,us,26.0112,-80.1495
+Bridgeport,Connecticut,us,41.1792,-73.1894
+Alexandria,Virginia,us,38.8048,-77.0469
+Lakewood,New Jersey,us,40.0979,-74.2177
+Pasadena,Texas,us,29.6911,-95.2091
+Mesquite,Texas,us,32.7668,-96.5992
+Syracuse,New York,us,43.0481,-76.1474
+Dayton,Ohio,us,39.7589,-84.1916
+Hampton,Virginia,us,37.0299,-76.3452
+Murfreesboro,Tennessee,us,35.8456,-86.3903
+Macon,Georgia,us,32.8407,-83.6324
+Killeen,Texas,us,31.1171,-97.7278
+Frisco,Texas,us,33.1507,-96.8236
+Pasadena,California,us,34.1478,-118.1445
+McKinney,Texas,us,33.1972,-96.6397
+Metairie,Louisiana,us,29.9939,-90.1788
+Midland,Texas,us,31.9973,-102.0779
+Lancaster,California,us,34.6868,-118.1542
+Eugene,Oregon,us,44.0521,-123.0868
+Jackson,Mississippi,us,32.2988,-90.1848
+Surprise,Arizona,us,33.6292,-112.3679
+Roseville,California,us,38.7521,-121.2880
+Denton,Texas,us,33.2148,-97.1331
+Fort Wayne,Indiana,us,41.0793,-85.1394
+Savannah,Georgia,us,32.0835,-81.0998
+Peoria,Illinois,us,40.6936,-89.5890
+Fayetteville,Arkansas,us,36.0822,-94.1719
+Cape Coral,Florida,us,26.5629,-81.9495
+Chattanooga,Tennessee,us,35.0456,-85.3097
+Boise,Idaho,us,43.6187,-116.2146
+Shreveport,Louisiana,us,32.5252,-93.7502
+Moreno Valley,California,us,33.9425,-117.2297
+Glendale,California,us,34.1425,-118.2551
+Akron,Ohio,us,41.0814,-81.5190
+Columbus,Ohio,us,39.9612,-82.9988
+Brownsville,Texas,us,25.9018,-97.4975
+Grand Prairie,Texas,us,32.7460,-97.0128
+Overland Park,Kansas,us,38.9822,-94.6708
+Tallahassee,Florida,us,30.4383,-84.2807
+Newport News,Virginia,us,37.0871,-76.4730
+Fontana,California,us,34.0922,-117.4350
+Ontario,Ontario,ca,43.6532,-79.3832
+Toronto,Ontario,ca,43.6532,-79.3832
+Montreal,Quebec,ca,45.5017,-73.5673
+Calgary,Alberta,ca,51.0447,-114.0719
+Ottawa,Ontario,ca,45.4215,-75.6919
+Edmonton,Alberta,ca,53.5461,-113.4938
+Mississauga,Ontario,ca,43.5890,-79.6441
+Winnipeg,Manitoba,ca,49.8951,-97.1384
+Vancouver,British Columbia,ca,49.2827,-123.1207
+Brampton,Ontario,ca,43.6833,-79.7167
+Hamilton,Ontario,ca,43.2557,-79.8711
+Quebec City,Quebec,ca,46.8139,-71.2080
+Surrey,British Columbia,ca,49.1913,-122.8490
+Laval,Quebec,ca,45.6066,-73.7124
+Halifax,Nova Scotia,ca,44.6488,-63.5752
+London,Ontario,ca,42.9849,-81.2453
+Markham,Ontario,ca,43.8561,-79.3370
+Vaughan,Ontario,ca,43.8361,-79.5000
+Gatineau,Quebec,ca,45.4765,-75.7013
+Longueuil,Quebec,ca,45.5312,-73.5185
+Burnaby,British Columbia,ca,49.2488,-122.9805
+Saskatoon,Saskatchewan,ca,52.1579,-106.6702
+Kitchener,Ontario,ca,43.4516,-80.4925
+Windsor,Ontario,ca,42.3149,-83.0364
+Regina,Saskatchewan,ca,50.4452,-104.6189
+Richmond,British Columbia,ca,49.1666,-123.1336
+Richmond Hill,Ontario,ca,43.8828,-79.4403
+Oakville,Ontario,ca,43.4675,-79.6877
+Burlington,Ontario,ca,43.3255,-79.7990
+Greater Sudbury,Ontario,ca,46.4917,-80.9930
+Sherbrooke,Quebec,ca,45.4042,-71.8929
+Oshawa,Ontario,ca,43.9001,-78.8658
+Saguenay,Quebec,ca,48.4279,-71.0538
+Levis,Quebec,ca,46.7071,-71.1697
+Barrie,Ontario,ca,44.3894,-79.6903
+Trois-Rivieres,Quebec,ca,46.3432,-72.5432
+Abbotsford,British Columbia,ca,49.0504,-122.3045
+St. Catharines,Ontario,ca,43.1594,-79.2469
+Kelowna,British Columbia,ca,49.8881,-119.4960
+Coquitlam,British Columbia,ca,49.2838,-122.7932
+Cambridge,Ontario,ca,43.3601,-80.3127
+Kingston,Ontario,ca,44.2312,-76.4860
+Whitby,Ontario,ca,43.8975,-78.9429
+Guelph,Ontario,ca,43.5448,-80.2482
+Ajax,Ontario,ca,43.8508,-79.0206
+Thunder Bay,Ontario,ca,48.3809,-89.2477
+St. John's,Newfoundland and Labrador,ca,47.5615,-52.7126
+Delta,British Columbia,ca,49.0847,-123.0581
+Waterloo,Ontario,ca,43.4668,-80.5164
+Chatham,Ontario,ca,42.4048,-82.1910
+Red Deer,Alberta,ca,52.2681,-113.8112
+Brantford,Ontario,ca,43.1394,-80.2644
+Lethbridge,Alberta,ca,49.6956,-112.8451
+Langley,British Columbia,ca,49.1044,-122.6600
+Cape Breton,Nova Scotia,ca,46.1368,-60.1942
+Niagara Falls,Ontario,ca,43.0896,-79.0849
+Pickering,Ontario,ca,43.8384,-79.0868
+Peterborough,Ontario,ca,44.3091,-78.3197
+Kamloops,British Columbia,ca,50.6745,-120.3273
+Nanaimo,British Columbia,ca,49.1659,-123.9401
+Airdrie,Alberta,ca,51.2924,-114.0157
+Sarnia,Ontario,ca,42.9745,-82.4038
+Prince George,British Columbia,ca,53.9171,-122.7497
+Sault Ste. Marie,Ontario,ca,46.5136,-84.3358
+North Bay,Ontario,ca,46.3091,-79.4608
+Medicine Hat,Alberta,ca,50.0405,-110.6764
+Chilliwack,British Columbia,ca,49.1578,-121.9513
+Fredericton,New Brunswick,ca,45.9636,-66.6431
+Moncton,New Brunswick,ca,46.0878,-64.7782
+Saint John,New Brunswick,ca,45.2733,-66.0633
+Victoria,British Columbia,ca,48.4284,-123.3656
