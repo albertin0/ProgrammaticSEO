@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Link from "next/link";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
@@ -51,19 +52,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XTVL2JMDH8"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-
-              gtag('config', 'G-XTVL2JMDH8');
-            `,
-          }}
+        {/* Google Analytics (Next.js native implementation) */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=G-XTVL2JMDH8`}
+          strategy="afterInteractive"
         />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-XTVL2JMDH8', {
+              page_path: window.location.pathname,
+            });
+          `}
+        </Script>
         {/* JSON-LD Schemas */}
         {/* JSON-LD Schemas */}
         <script
