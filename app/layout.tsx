@@ -53,14 +53,15 @@ export default function RootLayout({
       <head>
         {/* Google tag (gtag.js) */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-XTVL2JMDH8"></script>
-        <script dangerouslySetInnerHTML={{
-          __html: `
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
+        <script>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
 
-          gtag('config', 'G-XTVL2JMDH8');
-        ` }} />
+            gtag('config', 'G-XTVL2JMDH8');
+          `}
+        </script>
         {/* JSON-LD Schemas */}
         {/* JSON-LD Schemas */}
         <script

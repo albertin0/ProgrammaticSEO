@@ -5,14 +5,14 @@
   Γ£ô cacheComponents
 
   Creating an optimized production build ...
-Γ£ô Compiled successfully in 6.7s
+Γ£ô Compiled successfully in 7.4s
   Running TypeScript ...
   Collecting page data using 3 workers ...
   Generating static pages using 3 workers (0/93) ...
   Generating static pages using 3 workers (23/93) 
   Generating static pages using 3 workers (46/93) 
   Generating static pages using 3 workers (69/93) 
-Γ£ô Generating static pages using 3 workers (93/93) in 22.7s
+Γ£ô Generating static pages using 3 workers (93/93) in 15.7s
   Finalizing page optimization ...
 
 Route (app)
