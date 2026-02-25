@@ -1,5 +1,6 @@
 // Dynamic AQI Widget — no `use cache`, fetches live on every request (PPR dynamic slot)
 // This component is wrapped in Suspense in the city page for Partial Pre-Rendering
+import { connection } from "next/server";
 
 interface AQIData {
     aqi: number;
@@ -66,6 +67,7 @@ export default async function AirQualityWidget({
     lon: number;
     city: string;
 }) {
+    await connection(); // Opt out of prerendering proactively
     const data = await fetchAQI(lat, lon);
     const cls = getAQIClass(data.aqi);
 

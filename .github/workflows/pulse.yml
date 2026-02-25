@@ -2,8 +2,8 @@ name: Pulse — Hourly Health Data Update
 
 on:
   schedule:
-    # Every 10 minutes — GitHub Actions minimum granularity is 5 min
-    - cron: "*/10 * * * *"
+    # Every 1 hour — GitHub Actions minimum granularity is 5 min
+    - cron: "0 */5 * * *"
   workflow_dispatch: # Allow manual trigger
 
 permissions:
@@ -34,14 +34,14 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
         run: |
-          python factory.py --limit 50
+          python factory.py
         # Note: Rotate through cities by passing --limit and tracking state,
         # or run multiple jobs in parallel if you need full coverage faster.
 
       - name: Commit updated MDX files
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config --local user.email "albertino1903@gmail.com"
+          git config --local user.name "albertin0"
           git add vault/
           if git diff --staged --quiet; then
             echo "No vault changes to commit."

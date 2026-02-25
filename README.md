@@ -37,6 +37,7 @@ python factory.py --dry-run
 ### 4. Run the Dev Server
 ```bash
 npm run dev
+npx next build > build_output_gtag.txt 2>&1; Get-Content build_output_gtag.txt
 ```
 Open [http://localhost:3000](http://localhost:3000) or deploy to your domain (target: `healthislife.work`).
 

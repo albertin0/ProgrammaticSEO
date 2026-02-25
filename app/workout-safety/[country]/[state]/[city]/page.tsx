@@ -5,6 +5,8 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { getVaultEntry, getAllVaultSlugs } from "@/lib/vault";
 import AirQualityWidget from "@/components/AirQualityWidget";
 import AQILoading from "@/components/AQILoading";
+import WeatherWidget from "@/components/WeatherWidget";
+import WeatherLoading from "@/components/WeatherLoading";
 import { AlertBox, BulletList, LungsJointsScore } from "@/components/MdxComponents";
 import Link from "next/link";
 
@@ -122,6 +124,11 @@ export default async function CityPage({ params }: Props) {
                             {fm.aqi}
                         </strong>
                     </span>
+                    {fm.temperature !== undefined && fm.weatherCondition !== undefined && (
+                        <span style={{ fontSize: "0.8rem", padding: "0.3rem 0.8rem", borderRadius: "999px", background: "var(--color-surface)", border: "1px solid var(--color-border)" }}>
+                            ⛅ Temp: <strong>{fm.temperature}°C ({fm.weatherCondition})</strong>
+                        </span>
+                    )}
                 </div>
             </section>
 
@@ -134,6 +141,11 @@ export default async function CityPage({ params }: Props) {
 
                 {/* Sidebar */}
                 <aside className="sidebar">
+                    {/* ── DYNAMIC WEATHER WIDGET (PPR Suspense boundary) ── */}
+                    <Suspense fallback={<WeatherLoading />}>
+                        <WeatherWidget lat={fm.lat} lon={fm.lon} city={fm.city} />
+                    </Suspense>
+
                     {/* ── DYNAMIC AQI WIDGET (PPR Suspense boundary) ── */}
                     <Suspense fallback={<AQILoading />}>
                         <AirQualityWidget lat={fm.lat} lon={fm.lon} city={fm.city} />

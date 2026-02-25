@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Link from "next/link";
-import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
   title: {
@@ -52,6 +51,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Google tag (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XTVL2JMDH8"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+
+              gtag('config', 'G-XTVL2JMDH8');
+            `,
+          }}
+        />
         {/* JSON-LD Schemas */}
         {/* JSON-LD Schemas */}
         <script
@@ -84,7 +96,6 @@ export default function RootLayout({
             Pollen &amp; AQI via Google Maps API · Content grounded by Gemini AI with live search
           </p>
         </footer>
-        <GoogleAnalytics gaId="G-XTVL2JMDH8" />
       </body>
     </html>
   );

@@ -24,7 +24,8 @@ from pathlib import Path
 
 import requests
 from dotenv import load_dotenv
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 # ── Config ──────────────────────────────────────────────────────────
 load_dotenv()
@@ -33,7 +34,7 @@ GEMINI_API_KEY      = os.getenv("GEMINI_API_KEY", "")
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "")
 VAULT_DIR           = Path(__file__).parent / "vault"
 CITIES_CSV          = Path(__file__).parent / "cities.csv"
-MODEL_NAME          = "gemini-2.0-flash"
+MODEL_NAME          = "gemini-2.5-flash"
 
 # Anti-detection system persona (cynical local marathon runner + PT)
 SYSTEM_PROMPT = """
@@ -53,6 +54,8 @@ FORBIDDEN PHRASES (never use these):
 - "Delve into"
 - "As an AI"
 - "I cannot provide"
+- NEVER output `<cite: ...>` or any citation tags.
+- NEVER use unescaped `<` or `>` characters outside of the explicitly allowed components. Use `&lt;` and `&gt;` instead.
 
 CONTENT STRUCTURE:
 1. Start with a one-sentence opinion on whether today is a good day to work out outside.
@@ -72,8 +75,8 @@ CITY_PROMPT_TEMPLATE = """
 City: {city}, {state}, {country}
 Today's Date: {today}
 
-Ambee API Data:
-{ambee_data}
+Environmental Data (Pollen, AQI, Weather):
+{env_data}
 
 Your task:
 1. Use Google Search grounding to find news from the last 24 hours about workout hazards in {city} 
@@ -123,6 +126,21 @@ def fetch_google_aqi(lat: float, lon: float) -> dict:
         return _mock_aqi(lat, lon)
 
 
+def fetch_google_weather(lat: float, lon: float) -> dict:
+    if not GOOGLE_MAPS_API_KEY:
+        return _mock_weather(lat, lon)
+    try:
+        r = requests.get(
+            f"https://weather.googleapis.com/v1/currentConditions:lookup?location.latitude={lat}&location.longitude={lon}&key={GOOGLE_MAPS_API_KEY}",
+            timeout=10,
+        )
+        r.raise_for_status()
+        return r.json()
+    except Exception as e:
+        print(f"  ⚠️  Google Weather API error: {e} — using mock data")
+        return _mock_weather(lat, lon)
+
+
 def _mock_pollen(lat: float, lon: float) -> dict:
     seed = abs(lat * lon) % 10
     levels = ["None", "Low", "Moderate", "High", "Very High"]
@@ -142,6 +160,15 @@ def _mock_aqi(lat: float, lon: float) -> dict:
     return {
         "indexes": [{"code": "uaqi", "aqi": seed + 10, "category": "Good", "dominantPollutant": "pm25"}],
         "pollutants": [{"code": "pm25", "fullName": "PM2.5"}]
+    }
+
+
+def _mock_weather(lat: float, lon: float) -> dict:
+    seed = abs(lat * lon)
+    return {
+        "temperature": {"degrees": round((seed % 30) + 10, 1)},
+        "icon": "mostly_sunny",
+        "windSpeed": {"speed": round((seed % 20) + 5, 1)}
     }
 
 
@@ -168,15 +195,26 @@ def extract_aqi_summary(aqi_data: dict) -> tuple[int, str]:
         dom_pol_code = uaqi.get("dominantPollutant", "Unknown")
         pollutants = aqi_data.get("pollutants", [])
         dom_pol_name = next((p.get("fullName", dom_pol_code) for p in pollutants if p.get("code") == dom_pol_code), dom_pol_code)
+        dom_pol_name = dom_pol_name.replace("<", "&lt;")
         
         return aqi_val, dom_pol_name
     except Exception:
         return 0, "Unknown"
 
 
+def extract_weather_summary(weather_data: dict) -> tuple[float, str]:
+    try:
+        temp = weather_data.get("temperatureChange", {}).get("degrees") or weather_data.get("temperature", {}).get("degrees") or 0.0
+        icon = weather_data.get("icon", "")
+        cond = icon.split("/")[-1].replace("_", " ").title() if icon else "Clear"
+        return temp, cond
+    except Exception:
+        return 0.0, "Clear"
+
+
 # ── Gemini ───────────────────────────────────────────────────────────
 
-def generate_mdx_content(city: str, state: str, country: str, ambee_summary: str, dry_run: bool) -> str:
+def generate_mdx_content(city: str, state: str, country: str, env_summary: str, dry_run: bool) -> str:
     if dry_run:
         return _mock_mdx_content(city)
 
@@ -184,29 +222,24 @@ def generate_mdx_content(city: str, state: str, country: str, ambee_summary: str
         print("  ⚠️  No GEMINI_API_KEY — using mock MDX content")
         return _mock_mdx_content(city)
 
-    genai.configure(api_key=GEMINI_API_KEY)
-
-    # Enable Search Grounding tool
-    search_tool = genai.protos.Tool(
-        google_search=genai.protos.GoogleSearch()
-    )
-
-    model = genai.GenerativeModel(
-        model_name=MODEL_NAME,
-        system_instruction=SYSTEM_PROMPT,
-        tools=[search_tool],
-    )
-
     prompt = CITY_PROMPT_TEMPLATE.format(
         city=city,
         state=state,
         country=country.upper(),
         today=datetime.now(timezone.utc).strftime("%B %d, %Y"),
-        ambee_data=ambee_summary, # keeping the variable name for the prompt template
+        env_data=env_summary,
     )
 
     try:
-        response = model.generate_content(prompt)
+        client = genai.Client(api_key=GEMINI_API_KEY)
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                tools=[{"google_search": {}}],
+            ),
+        )
         return response.text
     except Exception as e:
         print(f"  ⚠️  Gemini error: {e} — using mock content")
@@ -245,6 +278,7 @@ Head outside with confidence today. Just keep an eye on the afternoon UV index.
 def build_frontmatter(
     city: str, state: str, country: str, lat: float, lon: float,
     pollen_level: str, aqi: int, dominant_pollutant: str, lungs_score: int,
+    temperature: float, weather_condition: str,
 ) -> str:
     slug_city = re.sub(r"[^a-z0-9]+", "-", city.lower()).strip("-")
     slug_state = re.sub(r"[^a-z0-9]+", "-", state.lower()).strip("-")
@@ -269,6 +303,8 @@ def build_frontmatter(
         "pollenLevel": pollen_level,
         "aqi": aqi,
         "dominantPollutant": dominant_pollutant,
+        "temperature": temperature,
+        "weatherCondition": weather_condition,
         "lastUpdated": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "tags": tags,
         "canonicalUrl": canonical,
@@ -324,23 +360,26 @@ def process_city(row: dict, dry_run: bool):
     # Fetch Google data
     pollen_data = fetch_google_pollen(lat, lon)
     aqi_data    = fetch_google_aqi(lat, lon)
+    weather_data= fetch_google_weather(lat, lon)
 
     pollen_level = extract_pollen_summary(pollen_data)
     aqi, dominant_pollutant = extract_aqi_summary(aqi_data)
+    temperature, weather_condition = extract_weather_summary(weather_data)
     lungs_score = calc_lungs_score(aqi, pollen_level)
 
-    ambee_summary = json.dumps({
+    env_summary = json.dumps({
         "pollen": {"level": pollen_level},
         "air_quality": {"AQI": aqi, "Dominant_Pollutant": dominant_pollutant},
+        "weather": {"temperature_C": temperature, "condition": weather_condition},
     }, indent=2)
 
-    print(f"  📊 Pollen: {pollen_level} | AQI: {aqi} | Score: {lungs_score}/10")
+    print(f"  📊 Pollen: {pollen_level} | AQI: {aqi} | Temp: {temperature}C")
 
     # Generate MDX content via Gemini
-    content = generate_mdx_content(city, state, country, ambee_summary, dry_run)
+    content = generate_mdx_content(city, state, country, env_summary, dry_run)
 
     # Build frontmatter
-    frontmatter = build_frontmatter(city, state, country, lat, lon, pollen_level, aqi, dominant_pollutant, lungs_score)
+    frontmatter = build_frontmatter(city, state, country, lat, lon, pollen_level, aqi, dominant_pollutant, lungs_score, temperature, weather_condition)
 
     # Write file
     write_mdx(city, state, country, frontmatter, content)

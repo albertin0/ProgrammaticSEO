@@ -16,6 +16,8 @@ export interface VaultFrontmatter {
     lastUpdated: string;
     tags: string[];
     canonicalUrl?: string;
+    temperature?: number;
+    weatherCondition?: string;
 }
 
 export interface VaultEntry {
