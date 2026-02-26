@@ -331,6 +331,13 @@ def calc_lungs_score(aqi: int, pollen_level: str) -> int:
     return max(1, min(10, raw))
 
 
+def sanitize_mdx_body(content: str) -> str:
+    """Escape bare <DIGIT sequences that break the MDX/JSX parser.
+    e.g. (<10µm) → (&lt;10µm) — raw numerics after < are not valid JSX tags.
+    """
+    return re.sub(r'<(\d)', r'&lt;\1', content)
+
+
 def write_mdx(city: str, state: str, country: str, frontmatter: str, content: str):
     slug_city = re.sub(r"[^a-z0-9]+", "-", city.lower()).strip("-")
     slug_state = re.sub(r"[^a-z0-9]+", "-", state.lower()).strip("-")
@@ -340,22 +347,23 @@ def write_mdx(city: str, state: str, country: str, frontmatter: str, content: st
     out_dir.mkdir(parents=True, exist_ok=True)
     out_file = out_dir / f"{slug_city}.mdx"
 
+    safe_content = sanitize_mdx_body(content)
     with open(out_file, "w", encoding="utf-8") as f:
-        f.write(frontmatter + "\n\n" + content.strip() + "\n")
+        f.write(frontmatter + "\n\n" + safe_content.strip() + "\n")
 
     print(f"  ✅ Written: vault/{slug_country}/{slug_state}/{slug_city}.mdx")
 
 
 # ── Main Pipeline ────────────────────────────────────────────────────
 
-def process_city(row: dict, dry_run: bool):
+def process_city(row: dict, dry_run: bool, current: int = 1, total: int = 1, left: int = 0):
     city    = row["city"].strip()
     state   = row["state"].strip()
     country = row["country"].strip().lower()
     lat     = float(row["lat"])
     lon     = float(row["lon"])
 
-    print(f"\n🏙️  Processing: {city}, {state}, {country.upper()}")
+    print(f"\n🏙️  [{current}/{total} — {left} left] Processing: {city}, {state}, {country.upper()}")
 
     # Fetch Google data
     pollen_data = fetch_google_pollen(lat, lon)
@@ -421,8 +429,9 @@ def main():
     print(f"🚀 Processing {total} cities...\n")
 
     for i, row in enumerate(cities[:total]):
+        left = total - i - 1
         try:
-            process_city(row, args.dry_run)
+            process_city(row, args.dry_run, i + 1, total, left)
         except Exception as e:
             print(f"  ❌ Error processing {row.get('city', '?')}: {e}")
             continue

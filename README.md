@@ -31,6 +31,8 @@ You can run the Python pipeline in `--dry-run` mode to safely generate mock `.md
 ```bash
 python -m pip install -r requirements.txt
 python factory.py --dry-run
+python validate_tags.py
+python fix_mdx.py --apply
 ```
 *(Or drop `--dry-run` to fetch live data and Gemini AI content)*
 
