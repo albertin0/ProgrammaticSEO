@@ -31,17 +31,19 @@ export function BulletList({ children }: { children: React.ReactNode }) {
 }
 
 /* ── Score Display ─────────────────────────────────────── */
-export function LungsJointsScore({ score }: { score: number }) {
+export function LungsJointsScore({ score }: { score: number | string }) {
+    const n = Number(score);
     const color =
-        score >= 7 ? "var(--color-primary)"
-            : score >= 4 ? "var(--color-warning)"
+        n >= 7 ? "var(--color-primary)"
+            : n >= 4 ? "var(--color-warning)"
                 : "var(--color-danger)";
+    const display = isNaN(n) ? "?" : n;
 
     return (
         <div className="score-card">
             <span className="score-label">🫁 Lungs &amp; Joints Score</span>
             <span className="score-value" style={{ color }}>
-                {score}
+                {display}
                 <span className="score-denom">/10</span>
             </span>
         </div>

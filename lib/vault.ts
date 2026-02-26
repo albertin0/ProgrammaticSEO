@@ -77,6 +77,54 @@ export async function getAllVaultSlugs(): Promise<
     return slugs;
 }
 
+/** Get all unique country slugs */
+export async function getCountrySlugs(): Promise<string[]> {
+    if (!fs.existsSync(VAULT_DIR)) return [];
+    return fs.readdirSync(VAULT_DIR).filter((f) =>
+        fs.statSync(path.join(VAULT_DIR, f)).isDirectory()
+    );
+}
+
+/** Get all unique state slugs for a country */
+export async function getStateSlugs(country: string): Promise<string[]> {
+    const dir = path.join(VAULT_DIR, country);
+    if (!fs.existsSync(dir)) return [];
+    return fs.readdirSync(dir).filter((f) =>
+        fs.statSync(path.join(dir, f)).isDirectory()
+    );
+}
+
+/** Get all entries for a given country */
+export async function getCountryEntries(
+    country: string
+): Promise<{ state: string; entries: VaultEntry[] }[]> {
+    const states = await getStateSlugs(country);
+    const result: { state: string; entries: VaultEntry[] }[] = [];
+    for (const state of states) {
+        const dir = path.join(VAULT_DIR, country, state);
+        const files = fs.readdirSync(dir).filter((f) => f.endsWith(".mdx"));
+        const entries = await Promise.all(
+            files.map((f) => getVaultEntry(country, state, f.replace(".mdx", "")))
+        );
+        result.push({ state, entries: entries.filter(Boolean) as VaultEntry[] });
+    }
+    return result;
+}
+
+/** Get all entries for a given country + state */
+export async function getStateEntries(
+    country: string,
+    state: string
+): Promise<VaultEntry[]> {
+    const dir = path.join(VAULT_DIR, country, state);
+    if (!fs.existsSync(dir)) return [];
+    const files = fs.readdirSync(dir).filter((f) => f.endsWith(".mdx"));
+    const entries = await Promise.all(
+        files.map((f) => getVaultEntry(country, state, f.replace(".mdx", "")))
+    );
+    return entries.filter(Boolean) as VaultEntry[];
+}
+
 /** Get a flat list of all vault entries (for sitemap, home grid, etc.) */
 export async function getAllVaultEntries(): Promise<VaultEntry[]> {
     const slugs = await getAllVaultSlugs();

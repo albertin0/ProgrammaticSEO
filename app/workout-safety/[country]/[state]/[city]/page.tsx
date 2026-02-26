@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import { getVaultEntry, getAllVaultSlugs } from "@/lib/vault";
 import AirQualityWidget from "@/components/AirQualityWidget";
 import AQILoading from "@/components/AQILoading";
@@ -104,12 +105,12 @@ export default async function CityPage({ params }: Props) {
                         className="score-value"
                         style={{
                             color:
-                                fm.lungsJointsScore >= 7 ? "var(--color-primary)"
-                                    : fm.lungsJointsScore >= 4 ? "var(--color-warning)"
+                                (fm.lungsJointsScore ?? 0) >= 7 ? "var(--color-primary)"
+                                    : (fm.lungsJointsScore ?? 0) >= 4 ? "var(--color-warning)"
                                         : "var(--color-danger)",
                         }}
                     >
-                        {fm.lungsJointsScore}
+                        {fm.lungsJointsScore ?? "?"}
                         <span className="score-denom">/10</span>
                     </span>
                 </div>
@@ -136,7 +137,7 @@ export default async function CityPage({ params }: Props) {
             <div className="content-grid">
                 {/* Main Article — Static / Cached */}
                 <article className="article-body">
-                    <MDXRemote source={content} components={MDX_COMPONENTS} />
+                    <MDXRemote source={content} components={MDX_COMPONENTS} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
                 </article>
 
                 {/* Sidebar */}
