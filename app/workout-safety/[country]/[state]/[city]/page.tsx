@@ -70,6 +70,8 @@ export default async function CityPage({ params }: Props) {
 
     const { frontmatter: fm, content } = entry;
 
+    const h1Subtitle = `Should you work out outside in ${fm.city} today? Your local AI-grounded pollen, AQI, and workout hazard score — updated every 10 minutes.`;
+
     const pollenColor =
         fm.pollenLevel === "Low" ? "var(--color-primary)"
             : fm.pollenLevel === "Moderate" ? "var(--color-warning)"
@@ -97,10 +99,12 @@ export default async function CityPage({ params }: Props) {
                     <span>{fm.city}</span> Workout Safety{fm.h1LongTailKeyword ? ` — ${fm.h1LongTailKeyword}` : ""}
                     <br />
                     <span style={{ display: "block", fontSize: "0.95rem", fontWeight: 500, opacity: 0.9, marginTop: "0.5rem" }}>
-                        Should you work out outside in {fm.city} today? Your local AI-grounded pollen, AQI, and workout hazard score — updated every 10 minutes.
+                        {h1Subtitle}
                     </span>
                 </h1>
-                <p className="hero-sub">{fm.description}</p>
+                {fm.description?.trim() && fm.description.trim() !== h1Subtitle ? (
+                    <p className="hero-sub">{fm.description}</p>
+                ) : null}
 
                 {/* Score */}
                 <div className="score-card">
