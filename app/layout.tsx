@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/react";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 export const metadata: Metadata = {
   title: {
@@ -51,17 +53,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XTVL2JMDH8"></script>
-        <script>
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            gtag('config', 'G-XTVL2JMDH8');
-          `}
-        </script>
+        <GoogleAnalytics />
+        {/* JSON-LD Schemas */}
         {/* JSON-LD Schemas */}
         {/* JSON-LD Schemas */}
         <script
@@ -84,8 +77,8 @@ export default function RootLayout({
           </div>
         </nav>
 
-        {/* Page content */}
         <main>{children}</main>
+        <Analytics />
 
         {/* Footer */}
         <footer className="footer">

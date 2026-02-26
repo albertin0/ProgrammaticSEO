@@ -3,9 +3,7 @@ import createMDX from "@next/mdx";
 
 const nextConfig: NextConfig = {
   // Partial Pre-Rendering in Next.js 16 is enabled via cacheComponents
-  experimental: {
-    cacheComponents: true,
-  },
+  cacheComponents: true,
   // Allow .mdx files as pages/routes
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 };
