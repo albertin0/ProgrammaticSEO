@@ -49,3 +49,12 @@ Open [http://localhost:3000](http://localhost:3000) or deploy to your domain (ta
 3. In Vercel Settings > Git > Deploy Hooks, create a hook named "Pulse Action".
 4. Copy the hook URL and add it to your GitHub Repository Secrets as `VERCEL_DEPLOY_HOOK`.
 5. Add `GEMINI_API_KEY` and `AMBEE_API_KEY` to GitHub Secrets so the Action can run.
+
+
+for each page make the heading:
+"Medicine Hat Workout Safety
+Should you work out outside in Medicine Hat today? Your local AI-grounded pollen, AQI, and workout hazard score — updated every 10 minutes."
+of H1 tag,
+and rephrase each heading with a unique long keyword which is expected to have high search volume in us in canada with very low competition and it should be a very long keyword which other big market players are not targetting
+
+optimise the code to make a query to gemini flash using the gemini API to provide long tail keywords with high search volume and low competition in usa and canada

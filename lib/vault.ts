@@ -5,6 +5,7 @@ import matter from "gray-matter";
 export interface VaultFrontmatter {
     title: string;
     description: string;
+    h1LongTailKeyword?: string;
     city: string;
     state: string;
     country: string;

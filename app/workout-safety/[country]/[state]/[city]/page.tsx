@@ -94,7 +94,11 @@ export default async function CityPage({ params }: Props) {
                     🗓️ Updated {new Date(fm.lastUpdated).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                 </div>
                 <h1 className="hero-title">
-                    <span>{fm.city}</span> Workout Safety
+                    <span>{fm.city}</span> Workout Safety{fm.h1LongTailKeyword ? ` — ${fm.h1LongTailKeyword}` : ""}
+                    <br />
+                    <span style={{ display: "block", fontSize: "0.95rem", fontWeight: 500, opacity: 0.9, marginTop: "0.5rem" }}>
+                        Should you work out outside in {fm.city} today? Your local AI-grounded pollen, AQI, and workout hazard score — updated every 10 minutes.
+                    </span>
                 </h1>
                 <p className="hero-sub">{fm.description}</p>
 

@@ -90,6 +90,49 @@ Your task:
 Write the MDX content now:
 """
 
+
+def generate_h1_long_tail_keyword(city: str, state: str, country: str, env_summary: str, dry_run: bool) -> str:
+    if dry_run:
+        return ""
+
+    if not GEMINI_API_KEY:
+        return ""
+
+    prompt = f"""
+Generate exactly ONE long-tail SEO keyword phrase to append to an H1 for a local page.
+
+Context:
+- Page topic: outdoor workout safety using pollen, AQI, and hazard score updated every 10 minutes
+- Location: {city}, {state}, {country.upper()}
+- Target audience: USA and Canada
+
+Environmental snapshot (for specificity):
+{env_summary}
+
+Requirements:
+- Output ONLY the keyword phrase (no quotes, no punctuation at ends, no markdown)
+- Make it a very long keyword phrase (9 to 16 words)
+- Must be unique and hyper-specific to the location and intent ("today", "right now", etc.)
+- Avoid generic head terms like "air quality" alone; include multiple modifiers
+- Avoid brand names and avoid sounding like a big corporate site
+- Aim for high search volume and low competition (best-effort heuristic)
+""".strip()
+
+    try:
+        client = genai.Client(api_key=GEMINI_API_KEY)
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction="You are an SEO specialist for programmatic local pages. Be concise and follow output rules exactly.",
+            ),
+        )
+        text = (response.text or "").strip()
+        return re.sub(r"\s+", " ", text)
+    except Exception as e:
+        print(f"  ⚠️  Gemini keyword error: {e} — skipping h1LongTailKeyword")
+        return ""
+
 # ── Google Maps APIs ────────────────────────────────────────────────────────
 
 def fetch_google_pollen(lat: float, lon: float) -> dict:
@@ -279,6 +322,7 @@ def build_frontmatter(
     city: str, state: str, country: str, lat: float, lon: float,
     pollen_level: str, aqi: int, dominant_pollutant: str, lungs_score: int,
     temperature: float, weather_condition: str,
+    h1_long_tail_keyword: str = "",
 ) -> str:
     slug_city = re.sub(r"[^a-z0-9]+", "-", city.lower()).strip("-")
     slug_state = re.sub(r"[^a-z0-9]+", "-", state.lower()).strip("-")
@@ -309,6 +353,9 @@ def build_frontmatter(
         "tags": tags,
         "canonicalUrl": canonical,
     }
+
+    if h1_long_tail_keyword:
+        fm["h1LongTailKeyword"] = h1_long_tail_keyword
 
     lines = ["---"]
     for k, v in fm.items():
@@ -386,8 +433,24 @@ def process_city(row: dict, dry_run: bool, current: int = 1, total: int = 1, lef
     # Generate MDX content via Gemini
     content = generate_mdx_content(city, state, country, env_summary, dry_run)
 
+    # Generate H1 long-tail keyword via Gemini
+    h1_long_tail_keyword = generate_h1_long_tail_keyword(city, state, country, env_summary, dry_run)
+
     # Build frontmatter
-    frontmatter = build_frontmatter(city, state, country, lat, lon, pollen_level, aqi, dominant_pollutant, lungs_score, temperature, weather_condition)
+    frontmatter = build_frontmatter(
+        city,
+        state,
+        country,
+        lat,
+        lon,
+        pollen_level,
+        aqi,
+        dominant_pollutant,
+        lungs_score,
+        temperature,
+        weather_condition,
+        h1_long_tail_keyword=h1_long_tail_keyword,
+    )
 
     # Write file
     write_mdx(city, state, country, frontmatter, content)
