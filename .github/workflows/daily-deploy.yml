@@ -40,8 +40,8 @@ jobs:
 
       - name: Configure git
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "albertin0"
+          git config user.email "albertino1903@gmail.com"
 
       - name: Commit and push changes
         run: |
