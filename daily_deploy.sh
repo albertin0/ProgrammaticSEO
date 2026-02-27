@@ -2,6 +2,8 @@
 # daily_deploy.sh - Daily automation script for ProgrammaticSEO
 # Runs at 7:00 AM UTC every day via cron
 # Usage: ./daily_deploy.sh
+# 
+# Requires: .env file with API keys (GEMINI_API_KEY, GOOGLE_MAPS_API_KEY, etc.)
 
 set -e  # Exit on any error
 
@@ -9,6 +11,11 @@ set -e  # Exit on any error
 REPO_DIR="/workspaces/ProgrammaticSEO"
 LOG_FILE="${REPO_DIR}/logs/daily_deploy_$(date +%Y-%m-%d_%H-%M-%S).log"
 mkdir -p "${REPO_DIR}/logs"
+
+# Load environment variables from .env file if it exists
+if [ -f "${REPO_DIR}/.env" ]; then
+    export $(cat "${REPO_DIR}/.env" | xargs)
+fi
 
 # Start logging
 {
