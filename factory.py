@@ -31,7 +31,6 @@ from google.genai import types
 load_dotenv()
 
 GEMINI_API_KEY      = os.getenv("GEMINI_API_KEY", "")
-GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "")
 VAULT_DIR           = Path(__file__).parent / "vault"
 CITIES_CSV          = Path(__file__).parent / "cities.csv"
 MODEL_NAME          = "gemini-2.5-flash"
@@ -133,123 +132,115 @@ Requirements:
         print(f"  ⚠️  Gemini keyword error: {e} — skipping h1LongTailKeyword")
         return ""
 
-# ── Google Maps APIs ────────────────────────────────────────────────────────
+# ── Weather & Environment APIs (Free / No Key) ────────────────────────────────────────────────
 
-def fetch_google_pollen(lat: float, lon: float) -> dict:
-    if not GOOGLE_MAPS_API_KEY:
-        return _mock_pollen(lat, lon)
+def get_fallback_pollen_level() -> str:
+    # Since we have no free USA pollen APIs without a key, we default to "Moderate".
+    # Gemini will still write about the AQI and Weather perfectly.
+    return "Moderate"
+
+
+def fetch_openmeteo_aqi(lat: float, lon: float) -> dict:
     try:
-        r = requests.get(
-            f"https://pollen.googleapis.com/v1/forecast:lookup?key={GOOGLE_MAPS_API_KEY}&location.latitude={lat}&location.longitude={lon}&days=1",
-            timeout=10,
-        )
+        url = f"https://air-quality-api.open-meteo.com/v1/air-quality?latitude={lat}&longitude={lon}&current=us_aqi,pm2_5"
+        r = requests.get(url, timeout=10)
         r.raise_for_status()
         return r.json()
     except Exception as e:
-        print(f"  ⚠️  Google Pollen API error: {e} — using mock data")
-        return _mock_pollen(lat, lon)
-
-
-def fetch_google_aqi(lat: float, lon: float) -> dict:
-    if not GOOGLE_MAPS_API_KEY:
-        return _mock_aqi(lat, lon)
-    try:
-        r = requests.post(
-            f"https://airquality.googleapis.com/v1/currentConditions:lookup?key={GOOGLE_MAPS_API_KEY}",
-            json={
-                "location": {"latitude": lat, "longitude": lon},
-                "extraComputations": ["HEALTH_RECOMMENDATIONS", "DOMINANT_POLLUTANT_CONCENTRATION"]
-            },
-            timeout=10,
-        )
-        r.raise_for_status()
-        return r.json()
-    except Exception as e:
-        print(f"  ⚠️  Google AQI API error: {e} — using mock data")
+        print(f"  ⚠️  Open-Meteo AQI API error: {e} — using mock data")
         return _mock_aqi(lat, lon)
 
 
-def fetch_google_weather(lat: float, lon: float) -> dict:
-    if not GOOGLE_MAPS_API_KEY:
-        return _mock_weather(lat, lon)
+def fetch_openmeteo_weather(lat: float, lon: float) -> dict:
     try:
-        r = requests.get(
-            f"https://weather.googleapis.com/v1/currentConditions:lookup?location.latitude={lat}&location.longitude={lon}&key={GOOGLE_MAPS_API_KEY}",
-            timeout=10,
-        )
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current=temperature_2m,weather_code,wind_speed_10m"
+        r = requests.get(url, timeout=10)
         r.raise_for_status()
         return r.json()
     except Exception as e:
-        print(f"  ⚠️  Google Weather API error: {e} — using mock data")
+        print(f"  ⚠️  Open-Meteo Weather API error: {e} — using mock data")
         return _mock_weather(lat, lon)
 
 
 def _mock_pollen(lat: float, lon: float) -> dict:
-    seed = abs(lat * lon) % 10
-    levels = ["None", "Low", "Moderate", "High", "Very High"]
-    lvl = levels[int(seed) % 4 + 1]  # skip "None" for mock variety
+    # Always return "Moderate" for consistency with get_fallback_pollen_level
     return {
-        "dailyInfo": [{
-            "pollenTypeInfo": [
-                {"code": "TREE", "indexInfo": {"category": lvl}},
-                {"code": "GRASS", "indexInfo": {"category": lvl}}
-            ]
-        }]
+        "data": {
+            "timelines": [{
+                "intervals": [{
+                    "values": {
+                        "treeIndex": 2, # Moderate
+                        "grassIndex": 2, # Moderate
+                        "weedIndex": 0
+                    }
+                }]
+            }]
+        }
     }
 
 
 def _mock_aqi(lat: float, lon: float) -> dict:
     seed = int(abs(lat * lon * 1000) % 150)
     return {
-        "indexes": [{"code": "uaqi", "aqi": seed + 10, "category": "Good", "dominantPollutant": "pm25"}],
-        "pollutants": [{"code": "pm25", "fullName": "PM2.5"}]
+        "current": {
+            "us_aqi": seed + 10,
+            "pm2_5": (seed + 10) / 4.0
+        }
     }
 
 
 def _mock_weather(lat: float, lon: float) -> dict:
     seed = abs(lat * lon)
     return {
-        "temperature": {"degrees": round((seed % 30) + 10, 1)},
-        "icon": "mostly_sunny",
-        "windSpeed": {"speed": round((seed % 20) + 5, 1)}
+        "current": {
+            "temperature_2m": round((seed % 30) + 10, 1),
+            "weather_code": 1,
+            "wind_speed_10m": round((seed % 20) + 5, 1)
+        }
     }
 
 
 def extract_pollen_summary(pollen_data: dict) -> str:
+    # This function is now effectively a passthrough or uses the fallback logic
+    # as pollen data is either mocked or directly set to "Moderate".
     try:
-        types = pollen_data.get("dailyInfo", [])[0].get("pollenTypeInfo", [])
-        levels = {"None": 0, "Low": 1, "Moderate": 2, "High": 3, "Very High": 4}
-        worst_level = "Low"
-        for t in types:
-            cat = t.get("indexInfo", {}).get("category", "Low")
-            if levels.get(cat, 0) > levels.get(worst_level, 0):
-                worst_level = cat
-        return worst_level
+        data = pollen_data.get("data", {}).get("timelines", [])[0].get("intervals", [])[0].get("values", {})
+        max_idx = max(data.get("treeIndex", 0), data.get("grassIndex", 0), data.get("weedIndex", 0))
+        if max_idx >= 4: return "Very High"
+        if max_idx == 3: return "High"
+        if max_idx == 2: return "Moderate"
+        if max_idx == 1: return "Low"
+        return "None"
     except Exception:
         return "Low"
 
 
 def extract_aqi_summary(aqi_data: dict) -> tuple[int, str]:
     try:
-        indexes = aqi_data.get("indexes", [])
-        uaqi = next((i for i in indexes if i.get("code") == "uaqi"), indexes[0] if indexes else {})
-        aqi_val = uaqi.get("aqi", 0)
-        
-        dom_pol_code = uaqi.get("dominantPollutant", "Unknown")
-        pollutants = aqi_data.get("pollutants", [])
-        dom_pol_name = next((p.get("fullName", dom_pol_code) for p in pollutants if p.get("code") == dom_pol_code), dom_pol_code)
-        dom_pol_name = dom_pol_name.replace("<", "&lt;")
-        
-        return aqi_val, dom_pol_name
+        current = aqi_data.get("current", {})
+        aqi_val = current.get("us_aqi", 0)
+        pm25 = current.get("pm2_5", 0)
+        dom_pol = "PM2.5" if pm25 > 10 else "Ozone/Other"
+        return round(aqi_val), dom_pol
     except Exception:
         return 0, "Unknown"
 
 
 def extract_weather_summary(weather_data: dict) -> tuple[float, str]:
     try:
-        temp = weather_data.get("temperatureChange", {}).get("degrees") or weather_data.get("temperature", {}).get("degrees") or 0.0
-        icon = weather_data.get("icon", "")
-        cond = icon.split("/")[-1].replace("_", " ").title() if icon else "Clear"
+        current = weather_data.get("current", {})
+        temp = current.get("temperature_2m", 0.0)
+        wcode = current.get("weather_code", 0)
+        
+        code_map = {
+            0: "Clear", 1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast",
+            45: "Fog", 48: "Depositing Rime Fog",
+            51: "Light Drizzle", 53: "Moderate Drizzle", 55: "Dense Drizzle",
+            61: "Slight Rain", 63: "Moderate Rain", 65: "Heavy Rain",
+            71: "Slight Snow", 73: "Moderate Snow", 75: "Heavy Snow",
+            95: "Thunderstorm"
+        }
+        cond = code_map.get(wcode, "Clear")
         return temp, cond
     except Exception:
         return 0.0, "Clear"
@@ -305,7 +296,7 @@ This content was generated in `--dry-run` mode. Run without `--dry-run` and with
 </BulletList>
 
 <AlertBox type="info">
-  **Dry Run Mode:** This is placeholder content. Add your `GEMINI_API_KEY` and `GOOGLE_MAPS_API_KEY` to `.env` and run `python factory.py` for live, AI-grounded guides.
+  **Dry Run Mode:** This is placeholder content. Add your `GEMINI_API_KEY` to `.env` and run `python factory.py` for live, AI-grounded guides.
 </AlertBox>
 
 ## Workout Recommendations
@@ -412,12 +403,15 @@ def process_city(row: dict, dry_run: bool, current: int = 1, total: int = 1, lef
 
     print(f"\n🏙️  [{current}/{total} — {left} left] Processing: {city}, {state}, {country.upper()}")
 
-    # Fetch Google data
-    pollen_data = fetch_google_pollen(lat, lon)
-    aqi_data    = fetch_google_aqi(lat, lon)
-    weather_data= fetch_google_weather(lat, lon)
+    # Fetch Environment Data
+    if dry_run:
+        aqi_data    = _mock_aqi(lat, lon)
+        weather_data= _mock_weather(lat, lon)
+    else:
+        aqi_data    = fetch_openmeteo_aqi(lat, lon)
+        weather_data= fetch_openmeteo_weather(lat, lon)
 
-    pollen_level = extract_pollen_summary(pollen_data)
+    pollen_level = get_fallback_pollen_level()
     aqi, dominant_pollutant = extract_aqi_summary(aqi_data)
     temperature, weather_condition = extract_weather_summary(weather_data)
     lungs_score = calc_lungs_score(aqi, pollen_level)
@@ -455,7 +449,7 @@ def process_city(row: dict, dry_run: bool, current: int = 1, total: int = 1, lef
     # Write file
     write_mdx(city, state, country, frontmatter, content)
 
-    # Rate limiting — be polite to APIs
+    # Simple global rate limiting — Open-Meteo allows 10,000/day
     if not dry_run:
         time.sleep(2)
 

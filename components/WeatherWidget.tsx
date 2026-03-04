@@ -9,44 +9,33 @@ interface WeatherData {
     windDirection: string;
 }
 
-function getWindDirectionLabel(dirString: string) {
-    // "WIND_DIRECTION_SOUTHWEST" -> "SW", "WIND_DIRECTION_NORTH" -> "N", etc.
-    const map: Record<string, string> = {
-        "WIND_DIRECTION_NORTH": "N",
-        "WIND_DIRECTION_NORTHEAST": "NE",
-        "WIND_DIRECTION_EAST": "E",
-        "WIND_DIRECTION_SOUTHEAST": "SE",
-        "WIND_DIRECTION_SOUTH": "S",
-        "WIND_DIRECTION_SOUTHWEST": "SW",
-        "WIND_DIRECTION_WEST": "W",
-        "WIND_DIRECTION_NORTHWEST": "NW",
-    };
-    return map[dirString] || dirString.replace("WIND_DIRECTION_", "");
+function getWindDirectionLabel(degrees: number) {
+    const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+    const index = Math.round(((degrees %= 360) < 0 ? degrees + 360 : degrees) / 45) % 8;
+    return directions[index];
 }
 
-function getConditionsLabel(condString: string) {
-    // google weather returns a uri like "https://.../v1/mostly_sunny" or "mostly_sunny"
-    let label = condString.split("/").pop() || "";
-    label = label.replace(/_/g, " ");
-    return label.replace(/\b\w/g, (c) => c.toUpperCase());
+function getConditionsLabel(code: number) {
+    const map: Record<number, string> = {
+        0: "Clear",
+        1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast",
+        45: "Fog", 48: "Depositing Rime Fog",
+        51: "Light Drizzle", 53: "Moderate Drizzle", 55: "Dense Drizzle",
+        61: "Slight Rain", 63: "Moderate Rain", 65: "Heavy Rain",
+        71: "Slight Snow", 73: "Moderate Snow", 75: "Heavy Snow",
+        77: "Snow Grains",
+        80: "Slight Rain Showers", 81: "Moderate Rain Showers", 82: "Violent Rain Showers",
+        85: "Slight Snow Showers", 86: "Heavy Snow Showers",
+        95: "Thunderstorm",
+        96: "Thunder Storm (Slight Hail)", 99: "Thunder Storm (Heavy Hail)"
+    };
+    return map[code] || "Unknown";
 }
 
 async function fetchWeather(lat: number, lon: number): Promise<WeatherData> {
-    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-    if (!apiKey) {
-        // Deterministic mock if no API key
-        const seed = Math.abs(lat * lon);
-        return {
-            temperature: Math.round((seed % 30) + 10), // 10 to 40 C
-            conditions: "Partly Cloudy",
-            windSpeed: Math.round((seed % 20) + 5), // 5 to 25 km/h
-            windDirection: "NW",
-        };
-    }
-
     try {
         const res = await fetch(
-            `https://weather.googleapis.com/v1/currentConditions:lookup?location.latitude=${lat}&location.longitude=${lon}&key=${apiKey}`,
+            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m`,
             {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -54,14 +43,15 @@ async function fetchWeather(lat: number, lon: number): Promise<WeatherData> {
             }
         );
 
-        if (!res.ok) throw new Error("Google Weather API error");
+        if (!res.ok) throw new Error("Open-Meteo Weather API error");
         const data = await res.json();
+        const current = data.current || {};
 
         return {
-            temperature: data.temperatureChange?.degrees || data.temperature?.degrees || 0,
-            conditions: getConditionsLabel(data.icon || ""),
-            windSpeed: data.windSpeed?.speed || 0,
-            windDirection: getWindDirectionLabel(data.windSpeed?.direction || ""),
+            temperature: current.temperature_2m || 0,
+            conditions: getConditionsLabel(current.weather_code || 0),
+            windSpeed: current.wind_speed_10m || 0,
+            windDirection: getWindDirectionLabel(current.wind_direction_10m || 0),
         };
 
     } catch (e) {
