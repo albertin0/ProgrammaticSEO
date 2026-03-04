@@ -1,0 +1,54 @@
+name: Daily Deployment
+
+on:
+  schedule:
+    # Runs every day at 7:00 AM UTC
+    - cron: '0 7 * * *'
+  workflow_dispatch:  # Allow manual triggering
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Daily Deploy
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Set environment variables
+        run: |
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> $GITHUB_ENV
+          echo "GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> $GITHUB_ENV
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Run factory.py
+        run: python factory.py
+
+      - name: Run fix_mdx.py
+        run: python fix_mdx.py --apply
+
+      - name: Configure git
+        run: |
+          git config user.name "albertin0"
+          git config user.email "albertino1903@gmail.com"
+      - name: Commit and push changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+            git add .
+            git commit -m "${TIMESTAMP} deployment"
+            git push origin main
+            echo "Changes pushed successfully"
+          else
+            echo "No changes to commit"
+          fi
